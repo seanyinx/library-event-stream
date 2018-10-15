@@ -7,7 +7,7 @@
   <groupId>com.syswin.temail</groupId>
   <artifactId>temail-data-consistency</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0</version>
+  <version>1.0.0-snapshot</version>
   <modules>
     <module>consistency-spring</module>
   </modules>
@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
+    <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <pact.version>3.5.20</pact.version>
   </properties>

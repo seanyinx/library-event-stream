@@ -90,6 +90,18 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <name>Nexus Releases Repository</name>
+      <url>http://maven.systoon.com/repository/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>Nexus Snapshots Repository</name>
+      <url>http://maven.systoon.com/repository/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
   <build>
     <resources>
       <resource>

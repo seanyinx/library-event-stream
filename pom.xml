@@ -3,16 +3,14 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>com.syswin.temail</groupId>
-  <artifactId>temail-data-consistency</artifactId>
+  <artifactId>temail-data-consistency-integration</artifactId>
   <packaging>pom</packaging>
   <version>1.0.0-snapshot</version>
   <modules>
     <module>consistency-spring</module>
     <module>consistency-sdk</module>
   </modules>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -21,7 +19,6 @@
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <pact.version>3.5.20</pact.version>
   </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>

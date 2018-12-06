@@ -6,7 +6,7 @@
   <groupId>com.syswin.temail</groupId>
   <artifactId>temail-data-consistency-integration</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <modules>
     <module>consistency-spring</module>
     <module>consistency-sdk</module>

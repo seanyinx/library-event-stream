@@ -6,13 +6,13 @@ import com.syswin.library.stateful.task.runner.StatefulTask;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class BinlogStreamStatefulTask implements StatefulTask {
+class BinlogStreamStatefulTask implements StatefulTask {
 
   private final MysqlBinLogStream binLogStream;
   private final Consumer<Event> mysqlEventHandler;
   private final EventType[] eventTypes;
 
-  public BinlogStreamStatefulTask(MysqlBinLogStream binLogStream,
+  BinlogStreamStatefulTask(MysqlBinLogStream binLogStream,
       Consumer<Event> mysqlEventHandler,
       EventType... eventTypes) {
     this.binLogStream = binLogStream;

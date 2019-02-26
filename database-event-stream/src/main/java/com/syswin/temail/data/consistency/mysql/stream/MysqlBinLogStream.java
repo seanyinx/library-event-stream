@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MysqlBinLogStream {
+public class MysqlBinLogStream {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final BinaryLogClient client;
@@ -31,7 +31,7 @@ class MysqlBinLogStream {
   private final long serverId;
   private final BinlogSyncRecorder binlogSyncRecorder;
 
-  MysqlBinLogStream(String hostname,
+  public MysqlBinLogStream(String hostname,
       int port,
       String username,
       String password,

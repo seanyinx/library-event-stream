@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String BINLOG_POSITION_PATH_TEMPLATE = ZK_ROOT_PATH + "/consistency/%s/position";
+  private static final String BINLOG_POSITION_PATH_TEMPLATE = ZK_ROOT_PATH + "/%s/position";
   private final String recordPath;
   private final CuratorFramework curator;
 
@@ -21,14 +21,15 @@ public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
 
   void updatePositionToZk(String position) {
     try {
-      log.debug("Updating binlog position [{}] to zookeeper", position);
+      log.debug("Updating binlog position [{}] to {} on zookeeper", position, recordPath);
       curator.create().orSetData()
           .creatingParentsIfNeeded()
           .forPath(recordPath, position.getBytes());
-      log.debug("Updated binlog position [{}] to zookeeper", position);
+      log.debug("Updated binlog position [{}] to {} on zookeeper", position, recordPath);
     } catch (Exception e) {
-      log.error("Failed to record binlog position {} to zookeeper {}",
+      log.error("Failed to record binlog position {} to {} on zookeeper {}",
           position,
+          recordPath,
           curator.getZookeeperClient().getCurrentConnectionString(),
           e);
     }

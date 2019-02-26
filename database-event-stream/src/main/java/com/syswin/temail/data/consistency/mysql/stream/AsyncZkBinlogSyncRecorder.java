@@ -18,7 +18,7 @@ public class AsyncZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
   private final AtomicBoolean updated = new AtomicBoolean();
   private volatile String position;
 
-  AsyncZkBinlogSyncRecorder(String clusterName, CuratorFramework curator, long updateIntervalMillis) {
+  public AsyncZkBinlogSyncRecorder(String clusterName, CuratorFramework curator, long updateIntervalMillis) {
     super(clusterName, curator);
     this.updateIntervalMillis = updateIntervalMillis;
   }

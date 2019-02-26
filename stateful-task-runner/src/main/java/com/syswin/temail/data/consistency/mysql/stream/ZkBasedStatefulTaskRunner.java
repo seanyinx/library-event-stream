@@ -45,12 +45,14 @@ class ZkBasedStatefulTaskRunner {
     leaderLatch.start();
     curator.getConnectionStateListenable().addListener((client, newState) -> {
       if (newState.isConnected()) {
-        log.info("Participant {} is connected to zookeeper {}",
+        log.info("Participant {} is connected with leader latch {} to zookeeper {}",
             leaderLatch.getId(),
+            leaderLatchPath,
             curator.getZookeeperClient().getCurrentConnectionString());
       } else {
-        log.error("Participant {} is disconnected from zookeeper {}",
+        log.error("Participant {} is disconnected with leader latch {} from zookeeper {}",
             leaderLatch.getId(),
+            leaderLatchPath,
             curator.getZookeeperClient().getCurrentConnectionString());
 
         this.task.stop();
@@ -63,14 +65,14 @@ class ZkBasedStatefulTaskRunner {
     executor.execute(() -> {
       try {
         while (!Thread.currentThread().isInterrupted()) {
-          log.info("Participant {} is waiting for leadership", leaderLatch.getId());
+          log.info("Participant {} is waiting for leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
           leaderLatch.await();
-          log.info("Participant {} is running with leadership", leaderLatch.getId());
+          log.info("Participant {} is running with leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
           task.start(errorHandler);
-          log.info("Participant {} completed task with leadership", leaderLatch.getId());
+          log.info("Participant {} completed task with leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
         }
       } catch (InterruptedException | EOFException e) {
-        log.warn("Failed to acquire leadership due to interruption", e);
+        log.warn("Failed to acquire leadership with leader latch {} due to interruption", leaderLatchPath, e);
       }
     });
   }
@@ -85,17 +87,17 @@ class ZkBasedStatefulTaskRunner {
     try {
       if (!CLOSED.equals(leaderLatch.getState())) {
         leaderLatch.close();
-        log.info("Participant {} released leadership", leaderLatch.getId());
+        log.info("Participant {} released leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
       }
       leaderLatches.remove(leaderLatch.getId());
     } catch (IOException e) {
-      log.warn("Failed to close leader latch of participant {}", leaderLatch.getId(), e);
+      log.warn("Failed to close leader latch {} of participant {}", leaderLatchPath, leaderLatch.getId(), e);
     }
   }
 
   private Consumer<Throwable> errorHandler() {
     return ex -> {
-      log.error("Unexpected exception when running task on participant {}", leaderLatch.getId(), ex);
+      log.error("Unexpected exception when running task on participant {} with leader latch {}", leaderLatch.getId(), leaderLatchPath, ex);
       LeaderLatch latchToClose = replaceLeaderLatch();
       task.stop();
       releaseLeadership(latchToClose);
@@ -109,7 +111,7 @@ class ZkBasedStatefulTaskRunner {
       leaderLatch.start();
     } catch (Exception e) {
       // this shall not happen
-      log.error("Failed to start leader latch of participant {}", leaderLatch.getId());
+      log.error("Failed to start leader latch {} of participant {}", leaderLatchPath, leaderLatch.getId());
     }
     return latchToClose;
   }

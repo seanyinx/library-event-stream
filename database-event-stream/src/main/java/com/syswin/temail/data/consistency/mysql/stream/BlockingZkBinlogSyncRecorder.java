@@ -4,7 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 
 public class BlockingZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
 
-  BlockingZkBinlogSyncRecorder(String clusterName, CuratorFramework curator) {
+  public BlockingZkBinlogSyncRecorder(String clusterName, CuratorFramework curator) {
     super(clusterName, curator);
   }
 

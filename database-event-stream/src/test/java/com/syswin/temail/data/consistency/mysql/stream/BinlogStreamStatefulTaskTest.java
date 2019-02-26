@@ -1,5 +1,7 @@
 package com.syswin.temail.data.consistency.mysql.stream;
 
+import static com.github.shyiko.mysql.binlog.event.EventType.EXT_WRITE_ROWS;
+import static com.github.shyiko.mysql.binlog.event.EventType.TABLE_MAP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -20,7 +22,7 @@ public class BinlogStreamStatefulTaskTest {
 
   private final MysqlBinLogStream binLogStream = Mockito.mock(MysqlBinLogStream.class);
 
-  private final BinlogStreamStatefulTask task = new BinlogStreamStatefulTask(binLogStream, eventHandler);
+  private final BinlogStreamStatefulTask task = new BinlogStreamStatefulTask(binLogStream, eventHandler, TABLE_MAP, EXT_WRITE_ROWS);
 
   @Test
   public void startUnderlyingStream() throws IOException {
@@ -28,7 +30,7 @@ public class BinlogStreamStatefulTaskTest {
     task.start(throwableConsumer);
 
     assertThat(exceptions).isEmpty();
-    verify(binLogStream).start(eventHandler, throwableConsumer);
+    verify(binLogStream).start(eventHandler, throwableConsumer, TABLE_MAP, EXT_WRITE_ROWS);
   }
 
   @Test
@@ -43,7 +45,7 @@ public class BinlogStreamStatefulTaskTest {
   @Test
   public void handleErrorOnException() throws IOException {
     IOException exception = new IOException("oops");
-    doThrow(exception).when(binLogStream).start(eventHandler, throwableConsumer);
+    doThrow(exception).when(binLogStream).start(eventHandler, throwableConsumer, TABLE_MAP, EXT_WRITE_ROWS);
 
     task.start(throwableConsumer);
 

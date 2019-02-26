@@ -54,6 +54,11 @@ public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
     return recordPath;
   }
 
+  @Override
+  public void flush() {
+    log.info("Flushed binlog position [{}] to {} on zookeeper", position(), recordPath);
+  }
+
   private String binlogPositionString() throws Exception {
     return new String(curator.getData().forPath(recordPath));
   }

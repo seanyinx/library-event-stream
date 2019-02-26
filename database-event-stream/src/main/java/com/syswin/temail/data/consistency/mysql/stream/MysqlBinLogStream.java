@@ -45,11 +45,11 @@ public class MysqlBinLogStream {
     this.client = new BinaryLogClient(hostname, port, username, password);
   }
 
-  void start(Consumer<Event> eventHandler, Consumer<Throwable> errorHandler) throws IOException {
+  void start(Consumer<Event> eventHandler, Consumer<Throwable> errorHandler, EventType... eventTypes) throws IOException {
     client.setServerId(serverId);
     client.setGtidSetFallbackToPurged(true);
     client.setGtidSet(binlogSyncRecorder.position());
-    client.setEventDeserializer(createEventDeserializerOf(TABLE_MAP, EXT_WRITE_ROWS));
+    client.setEventDeserializer(createEventDeserializerOf(eventTypes));
     client.registerEventListener(replicationEventListener(eventHandler, errorHandler));
     client.registerLifecycleListener(new MySqlLifecycleListener(hostname, port, binlogSyncRecorder, errorHandler));
 

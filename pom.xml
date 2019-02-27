@@ -12,6 +12,7 @@
     <module>consistency-sdk</module>
     <module>stateful-task-runner</module>
     <module>database-event-stream</module>
+    <module>database-event-stream-spring</module>
   </modules>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

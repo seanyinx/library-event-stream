@@ -1,0 +1,41 @@
+<!-- monitorInterval="1800" 指log4j2每隔1800秒（半小时），自动监控该配置文件是否有变化，如果变化，则自动根据文件内容重新配置 -->
+<configuration status="INFO" monitorInterval="1800">
+  <appenders>
+    <!--控制台打印 -->
+    <Console name="CONSOLE" target="SYSTEM_OUT">
+      <PatternLayout pattern="[@project.artifactId@] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %highlight{%-5p} => %cyan{%c.%M(%F:%L)} - %m%n"/>
+    </Console>
+    <!--当日志内容达到指定范围后，以某种定义规则打包日志文件 -->
+    <RollingFile name="RollingFile" fileName="/opt/logs/@project.artifactId@.log" filePattern="/opt/logs/@project.artifactId@-logs-%d{yyyy-MM-dd}-%i.log.gz">
+      <PatternLayout pattern="[@project.artifactId@] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5p => %c - %m%n"/>
+      <Policies>
+        <TimeBasedTriggeringPolicy/>
+        <SizeBasedTriggeringPolicy size="50MB"/><!--当日志大小达到50MB时，以上述filePattern定义的格式进行打包压缩 -->
+      </Policies>
+      <DefaultRolloverStrategy>
+        <!--
+          * only files in the log folder, no sub folders
+          * only rolled over log files (name match)
+          * only total file size is greater than 25 GB (default or pass by vm options -DtotalLogSize)
+        -->
+        <Delete basePath="/opt/logs/" maxDepth="1">
+          <IfAccumulatedFileSize exceeds="${sys:totalLogSize:-25} GB">
+            <IfAny>
+              <IfFileName glob="@project.artifactId@-*.log.gz"/>
+              <IfFileName glob="@project.artifactId@-*.log"/>
+            </IfAny>
+          </IfAccumulatedFileSize>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+    <!-- 异步输出文件 -->
+    <Async name="Async">
+      <AppenderRef ref="RollingFile"/>
+    </Async>
+  </appenders>
+  <loggers>
+    <root level="info">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </loggers>
+</configuration>

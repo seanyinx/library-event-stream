@@ -1,14 +1,16 @@
 package com.syswin.library.database.event.stream.mysql;
 
-import static com.github.shyiko.mysql.binlog.event.EventType.EXT_WRITE_ROWS;
-import static com.github.shyiko.mysql.binlog.event.EventType.TABLE_MAP;
-
 import com.github.shyiko.mysql.binlog.event.Event;
+import com.github.shyiko.mysql.binlog.event.EventType;
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class MysqlBinlogStreamStatefulTaskBuilder {
 
+  private final List<EventType> eventTypes = new ArrayList<>();
   private String username;
   private String password;
   private long serverId;
@@ -55,6 +57,11 @@ public class MysqlBinlogStreamStatefulTaskBuilder {
     return this;
   }
 
+  public MysqlBinlogStreamStatefulTaskBuilder addEventTypes(EventType... eventTypes) {
+    Collections.addAll(this.eventTypes, eventTypes);
+    return this;
+  }
+
   public BinlogStreamStatefulTask build() {
     MysqlBinLogStream binLogStream = new MysqlBinLogStream(
         hostname,
@@ -64,6 +71,6 @@ public class MysqlBinlogStreamStatefulTaskBuilder {
         serverId,
         binlogSyncRecorder);
 
-    return new BinlogStreamStatefulTask(binLogStream, mysqlEventHandler, TABLE_MAP, EXT_WRITE_ROWS);
+    return new BinlogStreamStatefulTask(binLogStream, mysqlEventHandler, eventTypes.toArray(new EventType[0]));
   }
 }

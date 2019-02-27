@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3316/consistency?useSSL=false
+    username: root
+    password: password
+    driver-class-name: com.mysql.jdbc.Driver
+    initialize: true
+    initialization-mode: always
+    continue-on-error: false
+    schema: classpath:sql/schema.sql
+
+logging:
+  level:
+    root: INFO
+    com.syswin.temail: INFO
+
+library.database.stream:
+  cluster.name: consistency
+  participant.id: watcher
+  zk.address: localhost:2181
+  update.mode: blocking

@@ -1,10 +1,9 @@
-package com.syswin.temail.data.consistency.mysql.stream;
+package com.syswin.library.database.event.stream.mysql;
 
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
 import com.syswin.library.database.event.stream.CounterBinlogSyncRecorder;
-import com.syswin.library.database.event.stream.mysql.MysqlBinlogStreamStatefulTaskBuilder;
 import com.syswin.library.database.event.stream.zookeeper.AsyncZkBinlogSyncRecorder;
 import com.syswin.library.database.event.stream.zookeeper.BlockingZkBinlogSyncRecorder;
 import com.syswin.library.stateful.task.runner.StatefulTask;
@@ -25,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class BinlogStreamConfig {
+class DefaultBinlogStreamConfig {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final Random random = new Random(System.currentTimeMillis());

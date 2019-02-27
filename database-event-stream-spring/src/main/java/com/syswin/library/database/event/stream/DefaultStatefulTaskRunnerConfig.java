@@ -1,4 +1,4 @@
-package com.syswin.temail.data.consistency.mysql.stream;
+package com.syswin.library.database.event.stream;
 
 import com.syswin.library.stateful.task.runner.StatefulTask;
 import com.syswin.library.stateful.task.runner.zookeeper.ZkBasedStatefulTaskRunner;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class StatefulTaskRunnerConfig {
+class DefaultStatefulTaskRunnerConfig {
 
   @ConditionalOnMissingBean(ZkBasedStatefulTaskRunner.class)
   @Bean(initMethod = "start", destroyMethod = "shutdown")

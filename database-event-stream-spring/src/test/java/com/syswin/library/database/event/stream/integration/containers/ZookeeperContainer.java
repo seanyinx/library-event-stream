@@ -1,4 +1,4 @@
-package com.syswin.temail.data.consistency.containers;
+package com.syswin.library.database.event.stream.integration.containers;
 
 import org.testcontainers.containers.GenericContainer;
 

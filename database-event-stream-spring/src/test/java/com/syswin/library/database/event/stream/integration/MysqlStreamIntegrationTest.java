@@ -1,14 +1,13 @@
-package com.syswin.temail.data.consistency;
+package com.syswin.library.database.event.stream.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.waitAtMost;
 
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
 import com.syswin.library.stateful.task.runner.StatefulTask;
-import com.syswin.temail.data.consistency.StatefulTaskConfig.StoppableStatefulTask;
-import com.syswin.temail.data.consistency.containers.MysqlContainer;
-import com.syswin.temail.data.consistency.containers.ZookeeperContainer;
-import com.syswin.temail.data.consistency.mysql.stream.MysqlEventHandler;
+import com.syswin.library.database.event.stream.integration.StatefulTaskConfig.StoppableStatefulTask;
+import com.syswin.library.database.event.stream.integration.containers.MysqlContainer;
+import com.syswin.library.database.event.stream.integration.containers.ZookeeperContainer;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

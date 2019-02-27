@@ -1,21 +1,24 @@
-package com.syswin.temail.data.consistency;
+package com.syswin.library.database.event.stream.integration;
 
 import static org.assertj.core.api.Assertions.fail;
 
 import com.syswin.library.stateful.task.runner.StatefulTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
-@Configuration
-class StatefulTaskConfig {
+@Component
+class StatefulTaskConfig implements BeanPostProcessor {
 
-  @Primary
-  @Bean
-  StoppableStatefulTask stoppableStatefulTask(StatefulTask task) {
-    return new StoppableStatefulTask(task);
+  @Override
+  public Object postProcessBeforeInitialization(@NotNull Object bean, String beanName) throws BeansException {
+    if (bean instanceof StatefulTask) {
+      return new StoppableStatefulTask((StatefulTask) bean);
+    }
+    return bean;
   }
 
   static class StoppableStatefulTask implements StatefulTask {

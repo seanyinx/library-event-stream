@@ -1,4 +1,4 @@
-package com.syswin.temail.data.consistency.mysql.stream;
+package com.syswin.library.database.event.stream.integration;
 
 import static com.github.shyiko.mysql.binlog.event.EventType.EXT_WRITE_ROWS;
 import static com.github.shyiko.mysql.binlog.event.EventType.TABLE_MAP;

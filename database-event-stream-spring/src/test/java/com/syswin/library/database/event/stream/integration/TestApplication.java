@@ -1,4 +1,4 @@
-package com.syswin.temail.data.consistency;
+package com.syswin.library.database.event.stream.integration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

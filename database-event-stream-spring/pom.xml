@@ -9,6 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>com.syswin.library</groupId>
   <artifactId>database-event-stream-spring</artifactId>
 
   <dependencyManagement>
@@ -25,7 +26,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.syswin.temail</groupId>
+      <groupId>com.syswin.library</groupId>
       <artifactId>database-event-stream</artifactId>
     </dependency>
     <dependency>

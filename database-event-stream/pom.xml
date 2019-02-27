@@ -9,6 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>com.syswin.library</groupId>
   <artifactId>database-event-stream</artifactId>
 
   <dependencies>
@@ -18,7 +19,7 @@
       <version>0.17.0</version>
     </dependency>
     <dependency>
-      <groupId>com.syswin.temail</groupId>
+      <groupId>com.syswin.library</groupId>
       <artifactId>stateful-task-runner</artifactId>
     </dependency>
 

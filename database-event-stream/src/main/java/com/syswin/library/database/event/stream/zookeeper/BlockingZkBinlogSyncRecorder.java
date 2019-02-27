@@ -9,6 +9,10 @@ public class BlockingZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
   }
 
   @Override
+  void flushIfUpdated() {
+  }
+
+  @Override
   public void record(String position) {
     updatePositionToZk(position);
   }

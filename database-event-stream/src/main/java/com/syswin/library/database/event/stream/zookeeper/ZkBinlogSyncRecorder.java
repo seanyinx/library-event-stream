@@ -3,6 +3,8 @@ package com.syswin.library.database.event.stream.zookeeper;
 import static com.syswin.library.database.event.stream.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
 
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
+import com.syswin.library.database.event.stream.DbEventStreamConnectionException;
+import com.syswin.library.database.event.stream.DbEventStreamEndOfLifeException;
 import java.lang.invoke.MethodHandles;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
@@ -44,9 +46,10 @@ public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
       }
 
       return binlogPositionString();
+    } catch (InterruptedException e) {
+      throw new DbEventStreamEndOfLifeException(e);
     } catch (Exception e) {
-      log.error("Failed to retrieve binlog position on zookeeper with path {}", recordPath, e);
-      throw new IllegalStateException(e);
+      throw new DbEventStreamConnectionException("Failed to retrieve binlog position on zookeeper with path " + recordPath, e);
     }
   }
 
@@ -57,8 +60,17 @@ public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
 
   @Override
   public void flush() {
-    log.info("Flushed binlog position [{}] to {} on zookeeper", position(), recordPath);
+    if (curator.getZookeeperClient().isConnected()) {
+      flushIfUpdated();
+      try {
+        log.info("Flushed binlog position [{}] to {} on zookeeper", binlogPositionString(), recordPath);
+      } catch (Exception e) {
+        log.error("Failed to retrieve binlog position to zookeeper with path {}", recordPath, e);
+      }
+    }
   }
+
+  abstract void flushIfUpdated();
 
   private String binlogPositionString() throws Exception {
     return new String(curator.getData().forPath(recordPath));

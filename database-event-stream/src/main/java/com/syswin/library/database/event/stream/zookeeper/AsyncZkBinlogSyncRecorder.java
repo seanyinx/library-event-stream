@@ -31,18 +31,13 @@ public class AsyncZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
   }
 
   @Override
-  public void flush() {
-    flushIfUpdated();
-    super.flush();
-  }
-
-  @Override
   public void start() {
     super.start();
     scheduledExecutor.scheduleWithFixedDelay(this::flushIfUpdated, updateIntervalMillis, updateIntervalMillis, MILLISECONDS);
   }
 
-  private void flushIfUpdated() {
+  @Override
+  void flushIfUpdated() {
     if (updated.compareAndSet(true, false)) {
       updatePositionToZk(position);
     }

@@ -159,7 +159,7 @@ class MysqlBinLogStream {
           hostname,
           port,
           client.getServerId(),
-          binlogSyncRecorder.position());
+          client.getGtidSet());
     }
 
     @Override
@@ -168,7 +168,7 @@ class MysqlBinLogStream {
           hostname,
           port,
           client.getServerId(),
-          binlogSyncRecorder.position());
+          client.getGtidSet());
     }
 
     @Override
@@ -188,7 +188,7 @@ class MysqlBinLogStream {
           hostname,
           port,
           client.getServerId(),
-          binlogSyncRecorder.position(),
+          client.getGtidSet(),
           ex);
     }
   }

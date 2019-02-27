@@ -4,7 +4,6 @@ import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.Z
 import static org.apache.curator.framework.recipes.leader.LeaderLatch.State.CLOSED;
 
 import com.syswin.library.stateful.task.runner.StatefulTask;
-import java.io.EOFException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class ZkBasedStatefulTaskRunner {
     leaderLatch = createLeaderLatch(curator, participantId);
   }
 
-  void start() throws Exception {
+  public void start() throws Exception {
     curator.create().orSetData().creatingParentsIfNeeded().forPath(leaderLatchPath);
 
     leaderLatch.start();
@@ -72,25 +71,27 @@ public class ZkBasedStatefulTaskRunner {
           task.start(errorHandler);
           log.info("Participant {} completed task with leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
         }
-      } catch (InterruptedException | EOFException e) {
+      } catch (Exception e) {
         log.warn("Failed to acquire leadership with leader latch {} due to interruption", leaderLatchPath, e);
       }
     });
   }
 
-  void shutdown() {
+  public void shutdown() {
+    log.info("Shutting down stateful task runner of participant {}", leaderLatch.getId());
     executor.shutdownNow();
     task.stop();
     leaderLatches.forEach((id, leaderLatch) -> releaseLeadership(leaderLatch));
+    log.info("Shut down stateful task runner of participant {} successfully", leaderLatch.getId());
   }
 
   private void releaseLeadership(LeaderLatch leaderLatch) {
     try {
       if (!CLOSED.equals(leaderLatch.getState())) {
         leaderLatch.close();
-        log.info("Participant {} released leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
       }
       leaderLatches.remove(leaderLatch.getId());
+      log.info("Participant {} released leadership with leader latch {}", leaderLatch.getId(), leaderLatchPath);
     } catch (IOException e) {
       log.warn("Failed to close leader latch {} of participant {}", leaderLatchPath, leaderLatch.getId(), e);
     }

@@ -7,6 +7,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import com.github.shyiko.mysql.binlog.event.Event;
+import com.syswin.library.database.event.stream.DbEventStreamConnectionException;
+import com.syswin.library.database.event.stream.DbEventStreamEndOfLifeException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +46,22 @@ public class BinlogStreamStatefulTaskTest {
 
   @Test
   public void handleErrorOnException() throws IOException {
-    IOException exception = new IOException("oops");
-    doThrow(exception).when(binLogStream).start(eventHandler, throwableConsumer, TABLE_MAP, EXT_WRITE_ROWS);
+    IOException exception1 = new IOException("oops");
+    DbEventStreamConnectionException exception2 = new DbEventStreamConnectionException("oops", exception1);
+    doThrow(exception1, exception2).when(binLogStream).start(eventHandler, throwableConsumer, TABLE_MAP, EXT_WRITE_ROWS);
 
     task.start(throwableConsumer);
+    task.start(throwableConsumer);
 
-    assertThat(exceptions).containsOnly(exception);
+    assertThat(exceptions).containsOnly(exception1, exception2);
+  }
+
+  @Test(expected = DbEventStreamEndOfLifeException.class)
+  public void blowsUpOnDbEventStreamEndOfLifeException() throws IOException {
+    IOException exception1 = new IOException("oops");
+    DbEventStreamEndOfLifeException exception2 = new DbEventStreamEndOfLifeException(exception1);
+    doThrow(exception2).when(binLogStream).start(eventHandler, throwableConsumer, TABLE_MAP, EXT_WRITE_ROWS);
+
+    task.start(throwableConsumer);
   }
 }

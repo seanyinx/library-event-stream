@@ -1,9 +1,9 @@
 package com.syswin.library.database.event.stream.zookeeper;
 
-import static com.seanyinx.github.unit.scaffolding.Randomness.nextLong;
 import static com.seanyinx.github.unit.scaffolding.Randomness.uniquify;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.syswin.library.database.event.stream.DbEventStreamConnectionException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -22,7 +22,6 @@ public class ZkBinlogSyncRecorderTestBase {
 
   final String clusterName = uniquify("cluster");
   final String filename = uniquify("filename");
-  final long position = nextLong();
 
   ZkBinlogSyncRecorder recorder;
 
@@ -51,7 +50,7 @@ public class ZkBinlogSyncRecorderTestBase {
     curator.close();
   }
 
-  @Test (expected = IllegalStateException.class)
+  @Test (expected = DbEventStreamConnectionException.class)
   public void blowsUpWhenGettingGTID_IfNotConnectedToZookeeper() {
     curator.close();
     recorder.position();

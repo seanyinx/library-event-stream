@@ -3,22 +3,23 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.syswin.temail</groupId>
-  <artifactId>temail-data-consistency-integration</artifactId>
+  <groupId>com.syswin.library</groupId>
+  <artifactId>library-parent</artifactId>
   <packaging>pom</packaging>
   <version>1.0.8-SNAPSHOT</version>
+
   <modules>
-    <module>consistency-spring</module>
-    <module>consistency-sdk</module>
     <module>stateful-task-runner</module>
     <module>database-event-stream</module>
     <module>database-event-stream-spring</module>
   </modules>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
+    <curator.version>4.1.0</curator.version>
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <pact.version>3.5.20</pact.version>
   </properties>
@@ -33,6 +34,33 @@
         <groupId>com.syswin.library</groupId>
         <artifactId>database-event-stream</artifactId>
         <version>1.0.8-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-recipes</artifactId>
+        <version>${curator.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- curator 4.x must include zookeeper 3.x explicitly to be compatible -->
+      <dependency>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>3.4.13</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -96,6 +124,18 @@
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
         <version>3.0.7</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-test</artifactId>
+        <version>2.12.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+          </exclusion>
+        </exclusions>
         <scope>test</scope>
       </dependency>
     </dependencies>

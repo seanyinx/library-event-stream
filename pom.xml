@@ -6,7 +6,7 @@
   <groupId>com.syswin.library</groupId>
   <artifactId>library-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.8-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <modules>
     <module>stateful-task-runner</module>
@@ -36,12 +36,12 @@
       <dependency>
         <groupId>com.syswin.library</groupId>
         <artifactId>stateful-task-runner</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.syswin.library</groupId>
         <artifactId>database-event-stream</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.curator</groupId>

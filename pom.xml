@@ -14,9 +14,17 @@
     <module>database-event-stream-spring</module>
   </modules>
 
+  <scm>
+    <connection>scm:git:${project.git.url}/library.git</connection>
+    <developerConnection>scm:git:${project.git.url}/library.git</developerConnection>
+    <url>${project.git.url}/library</url>
+    <tag>${project.version}</tag>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.git.url>http://172.28.4.12/ZJC_Java</project.git.url>
     <java.version>1.8</java.version>
     <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
     <curator.version>4.1.0</curator.version>
@@ -207,6 +215,16 @@
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-gitexe</artifactId>
+            <version>1.8.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

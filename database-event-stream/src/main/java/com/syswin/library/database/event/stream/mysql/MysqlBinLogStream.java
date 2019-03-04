@@ -51,6 +51,7 @@ class MysqlBinLogStream {
     client.setEventDeserializer(createEventDeserializerOf(eventTypes));
     client.registerEventListener(replicationEventListener(eventHandler, errorHandler));
     client.registerLifecycleListener(new MySqlLifecycleListener(hostname, port, errorHandler));
+    client.setKeepAlive(false);
 
     log.info("Connecting to Mysql at {}:{} from binlog [{}]", hostname, port, client.getGtidSet());
     client.connect();

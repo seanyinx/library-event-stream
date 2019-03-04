@@ -50,7 +50,7 @@ class MysqlBinLogStream {
     client.setGtidSet(binlogSyncRecorder.position());
     client.setEventDeserializer(createEventDeserializerOf(eventTypes));
     client.registerEventListener(replicationEventListener(eventHandler, errorHandler));
-    client.registerLifecycleListener(new MySqlLifecycleListener(hostname, port, binlogSyncRecorder, errorHandler));
+    client.registerLifecycleListener(new MySqlLifecycleListener(hostname, port, errorHandler));
 
     log.info("Connecting to Mysql at {}:{} from binlog [{}]", hostname, port, client.getGtidSet());
     client.connect();
@@ -139,17 +139,14 @@ class MysqlBinLogStream {
 
     private final String hostname;
     private final int port;
-    private final BinlogSyncRecorder binlogSyncRecorder;
     private final Consumer<Throwable> errorHandler;
 
     MySqlLifecycleListener(String hostname,
         int port,
-        BinlogSyncRecorder binlogSyncRecorder,
         Consumer<Throwable> errorHandler) {
 
       this.hostname = hostname;
       this.port = port;
-      this.binlogSyncRecorder = binlogSyncRecorder;
       this.errorHandler = errorHandler;
     }
 

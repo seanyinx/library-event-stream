@@ -28,11 +28,19 @@
     <java.version>1.8</java.version>
     <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
     <curator.version>4.1.0</curator.version>
+    <slf4j.version>1.7.25</slf4j.version>
+    <log4j.version>2.6.2</log4j.version>
+    <disruptor.version>3.3.6</disruptor.version>
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <pact.version>3.5.20</pact.version>
   </properties>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.syswin.library</groupId>
         <artifactId>stateful-task-runner</artifactId>
@@ -144,6 +152,36 @@
             <artifactId>zookeeper</artifactId>
           </exclusion>
         </exclusions>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+        <version>${disruptor.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

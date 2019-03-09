@@ -77,7 +77,6 @@ class MysqlBinLogStream {
   private String position() {
     return mergeGtidSets(
         new GtidSet(binlogSyncRecorder.position()),
-        jdbcContext.availableGtidSet(),
         jdbcContext.purgedGtidSet()).toString();
   }
 

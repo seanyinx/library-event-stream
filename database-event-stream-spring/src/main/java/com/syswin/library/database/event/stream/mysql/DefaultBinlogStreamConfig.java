@@ -32,7 +32,7 @@ class DefaultBinlogStreamConfig {
   @Value("${library.database.stream.cluster.name}")
   private String clusterName;
 
-  @ConditionalOnMissingBean(CuratorFramework.class)
+  @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
   CuratorFramework curator(@Value("${library.database.stream.zk.address}") String zookeeperAddress) throws InterruptedException {
     CuratorFramework curator = CuratorFrameworkFactory.newClient(
@@ -46,7 +46,7 @@ class DefaultBinlogStreamConfig {
     return curator;
   }
 
-  @ConditionalOnMissingBean(BinlogSyncRecorder.class)
+  @ConditionalOnMissingBean
   @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "async", matchIfMissing = true)
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   BinlogSyncRecorder asyncBinlogSyncRecorder(CuratorFramework curator,
@@ -55,7 +55,7 @@ class DefaultBinlogStreamConfig {
     return new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterName, curator, updateIntervalMillis));
   }
 
-  @ConditionalOnMissingBean(BinlogSyncRecorder.class)
+  @ConditionalOnMissingBean
   @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "blocking")
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   BinlogSyncRecorder blockingBinlogSyncRecorder(CuratorFramework curator) {
@@ -63,9 +63,9 @@ class DefaultBinlogStreamConfig {
     return new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterName, curator));
   }
 
-  @ConditionalOnMissingBean(StatefulTask.class)
+  @ConditionalOnMissingBean
   @Bean
-  StatefulTask binLogStreamTask(
+  BinlogStreamStatefulTask binLogStreamTask(
       DataSource dataSource,
       @Value("${spring.datasource.username}") String username,
       @Value("${spring.datasource.password}") String password,
@@ -82,6 +82,7 @@ class DefaultBinlogStreamConfig {
     serverId = serverId == 0 ? random.nextInt(Integer.MAX_VALUE) + 1 : serverId;
 
     return new MysqlBinlogStreamStatefulTaskBuilder()
+        .dataSource(dataSource)
         .hostname(databaseUrl[0])
         .port(Integer.parseInt(databaseUrl[1]))
         .username(username)

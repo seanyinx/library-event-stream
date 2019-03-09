@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.sql.DataSource;
 
 public class MysqlBinlogStreamStatefulTaskBuilder {
 
@@ -18,8 +19,14 @@ public class MysqlBinlogStreamStatefulTaskBuilder {
   private String hostname;
   private int port;
   private Consumer<Event> mysqlEventHandler;
+  private DataSource dataSource;
 
   public MysqlBinlogStreamStatefulTaskBuilder() {
+  }
+
+  public MysqlBinlogStreamStatefulTaskBuilder dataSource(DataSource dataSource) {
+    this.dataSource = dataSource;
+    return this;
   }
 
   public MysqlBinlogStreamStatefulTaskBuilder username(String username) {
@@ -69,6 +76,7 @@ public class MysqlBinlogStreamStatefulTaskBuilder {
         username,
         password,
         serverId,
+        new JdbcContext(dataSource),
         binlogSyncRecorder);
 
     return new BinlogStreamStatefulTask(binLogStream, mysqlEventHandler, eventTypes.toArray(new EventType[0]));

@@ -2,10 +2,12 @@ package com.syswin.library.database.event.stream.mysql;
 
 import static com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer.CompatibilityMode.CHAR_AND_BINARY_AS_BYTE_ARRAY;
 import static com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer.CompatibilityMode.DATE_AND_TIME_AS_LONG;
+import static com.syswin.library.database.event.stream.mysql.GtidSetUtils.mergeGtidSets;
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.BinaryLogClient.EventListener;
 import com.github.shyiko.mysql.binlog.BinaryLogClient.LifecycleListener;
+import com.github.shyiko.mysql.binlog.GtidSet;
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDataDeserializer;
@@ -28,6 +30,7 @@ class MysqlBinLogStream {
   private final String hostname;
   private final int port;
   private final long serverId;
+  private final JdbcContext jdbcContext;
   private final BinlogSyncRecorder binlogSyncRecorder;
 
   MysqlBinLogStream(String hostname,
@@ -35,11 +38,13 @@ class MysqlBinLogStream {
       String username,
       String password,
       long serverId,
+      JdbcContext jdbcContext,
       BinlogSyncRecorder binlogSyncRecorder) {
 
     this.hostname = hostname;
     this.port = port;
     this.serverId = serverId;
+    this.jdbcContext = jdbcContext;
     this.binlogSyncRecorder = binlogSyncRecorder;
     this.client = new BinaryLogClient(hostname, port, username, password);
   }
@@ -47,7 +52,7 @@ class MysqlBinLogStream {
   void start(Consumer<Event> eventHandler, Consumer<Throwable> errorHandler, EventType... eventTypes) throws IOException {
     client.setServerId(serverId);
     client.setGtidSetFallbackToPurged(true);
-    client.setGtidSet(binlogSyncRecorder.position());
+    client.setGtidSet(position());
     client.setEventDeserializer(createEventDeserializerOf(eventTypes));
     client.registerEventListener(replicationEventListener(eventHandler, errorHandler));
     client.registerLifecycleListener(new MySqlLifecycleListener(hostname, port, errorHandler));
@@ -67,6 +72,13 @@ class MysqlBinLogStream {
     } catch (IOException e) {
       log.warn("Failed to disconnect from MySql at {}:{}", hostname, port, e);
     }
+  }
+
+  private String position() {
+    return mergeGtidSets(
+        new GtidSet(binlogSyncRecorder.position()),
+        jdbcContext.availableGtidSet(),
+        jdbcContext.purgedGtidSet()).toString();
   }
 
   private BinaryLogClient.EventListener replicationEventListener(

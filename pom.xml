@@ -4,7 +4,7 @@
   <groupId>com.syswin.library</groupId>
   <artifactId>library-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
 
   <modules>
     <module>stateful-task-runner</module>
@@ -16,7 +16,7 @@
     <connection>scm:git:${project.git.url}/library.git</connection>
     <developerConnection>scm:git:${project.git.url}/library.git</developerConnection>
     <url>${project.git.url}/library</url>
-    <tag>${project.version}</tag>
+    <tag>v1.0.1</tag>
   </scm>
 
   <properties>
@@ -43,12 +43,12 @@
       <dependency>
         <groupId>com.syswin.library</groupId>
         <artifactId>stateful-task-runner</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>com.syswin.library</groupId>
         <artifactId>database-event-stream</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.curator</groupId>

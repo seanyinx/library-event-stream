@@ -13,7 +13,10 @@ class GtidSetUtils {
 
     log.info("Local GTID set is [{}], and purged GTID set on MySQL server is [{}]", localGtidSet, purgedGtidSet);
     purgedGtidSet.getUUIDSets().forEach(mergedGtidSet::putUUIDSet);
-    localGtidSet.getUUIDSets().forEach(mergedGtidSet::putUUIDSet);
+    localGtidSet.getUUIDSets()
+        .stream()
+        .filter(uuidSet -> !uuidSet.isContainedWithin(purgedGtidSet.getUUIDSet(uuidSet.getUUID())))
+        .forEach(mergedGtidSet::putUUIDSet);
     log.info("Merged GTID set is [{}]", mergedGtidSet);
     return mergedGtidSet;
   }

@@ -9,9 +9,11 @@ import org.junit.Test;
 public class GtidSetUtilsTest {
 
   private static final String localGtidSet = "036d85a9-64e5-11e6-9b48-42010af0000c:1-1000,"
+      + "27cb766f-9986-11e8-a968-5254007d8718:5-500,"
       + "7c1de3f2-3fd2-11e6-9cdc-42010af000bc:5-41";
 
   private static final String purgedGtidSet = "7145bf69-d1ca-11e5-a588-0242ac110004:1-1234,"
+      + "27cb766f-9986-11e8-a968-5254007d8718:1-1000,"
       + "036d85a9-64e5-11e6-9b48-42010af0000c:1-500";
 
 
@@ -22,6 +24,7 @@ public class GtidSetUtilsTest {
     assertThat(asList(gtidSet.toString().split(","))).containsExactlyInAnyOrder(
         "036d85a9-64e5-11e6-9b48-42010af0000c:1-1000",
         "7145bf69-d1ca-11e5-a588-0242ac110004:1-1234",
+        "27cb766f-9986-11e8-a968-5254007d8718:1-1000",
         "7c1de3f2-3fd2-11e6-9cdc-42010af000bc:5-41");
   }
 }

@@ -3,6 +3,7 @@ package com.syswin.library.database.event.stream.mysql;
 import com.github.shyiko.mysql.binlog.GtidSet;
 import com.syswin.library.database.event.stream.DbEventStreamConnectionException;
 import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,10 +47,12 @@ class JdbcContext {
   }
 
   private void query(String sql, ResultSetConsumer consumer) {
-    try (Statement statement = dataSource.getConnection().createStatement()) {
-      log.debug("Executing sql statement {} on data source {}", sql, dataSource.getConnection().getMetaData().getURL());
-      try (ResultSet resultSet = statement.executeQuery(sql)) {
-        consumer.accept(resultSet);
+    try (Connection connection = dataSource.getConnection()) {
+      try (Statement statement = connection.createStatement()) {
+        log.debug("Executing sql statement {} on data source {}", sql, connection.getMetaData().getURL());
+        try (ResultSet resultSet = statement.executeQuery(sql)) {
+          consumer.accept(resultSet);
+        }
       }
     } catch (SQLException e) {
       throw new DbEventStreamConnectionException("Failed to execute sql: " + sql, e);

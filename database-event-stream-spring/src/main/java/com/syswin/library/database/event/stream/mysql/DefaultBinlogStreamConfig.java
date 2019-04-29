@@ -6,8 +6,8 @@ import com.syswin.library.database.event.stream.BinlogSyncRecorder;
 import com.syswin.library.database.event.stream.CounterBinlogSyncRecorder;
 import com.syswin.library.database.event.stream.zookeeper.AsyncZkBinlogSyncRecorder;
 import com.syswin.library.database.event.stream.zookeeper.BlockingZkBinlogSyncRecorder;
-import com.syswin.library.stateful.task.runner.StatefulTask;
 import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -74,10 +74,13 @@ class DefaultBinlogStreamConfig {
       Consumer<Event> eventHandler,
       BinlogSyncRecorder binlogSyncRecorder) throws SQLException {
 
-    String[] databaseUrl = dataSource.getConnection().getMetaData().getURL()
-        .replaceFirst("^.*//", "")
-        .replaceFirst("/.*$", "")
-        .split(":");
+    String[] databaseUrl;
+    try (Connection connection = dataSource.getConnection()) {
+      databaseUrl = connection.getMetaData().getURL()
+          .replaceFirst("^.*//", "")
+          .replaceFirst("/.*$", "")
+          .split(":");
+    }
 
     serverId = serverId == 0 ? random.nextInt(Integer.MAX_VALUE) + 1 : serverId;
 

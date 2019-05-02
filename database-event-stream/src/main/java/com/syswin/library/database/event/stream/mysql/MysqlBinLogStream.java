@@ -121,7 +121,10 @@ class MysqlBinLogStream {
 
     @Override
     public void onEvent(Event event) {
-      log.trace("Received binlog event {}", event);
+      log.trace("Received binlog gtid={},position={}, event {},",client.getGtidSet(),client.getBinlogPosition(), event);
+      if (event.getHeader().getEventType() == (EventType.HEARTBEAT)) {
+        return;
+      }
       if (event.getData() != null) {
         handleDeserializedEvent(event);
       }

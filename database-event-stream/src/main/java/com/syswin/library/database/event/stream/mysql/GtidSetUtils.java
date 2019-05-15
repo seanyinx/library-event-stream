@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 class GtidSetUtils {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private GtidSetUtils() {
+  }
+
   static GtidSet mergeGtidSets(GtidSet localGtidSet, GtidSet purgedGtidSet) {
     GtidSet mergedGtidSet = new GtidSet("");
 

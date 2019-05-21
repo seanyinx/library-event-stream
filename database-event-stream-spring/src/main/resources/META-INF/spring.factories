@@ -1,3 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.syswin.library.database.event.stream.mysql.DataSourceContainer,\
+  com.syswin.library.database.event.stream.mysql.DefaultMultiDataSourceConfig,\
+  com.syswin.library.database.event.stream.zookeeper.DefaultCuratorConfig,\
   com.syswin.library.database.event.stream.mysql.DefaultBinlogStreamConfig,\
   com.syswin.library.database.event.stream.DefaultStatefulTaskRunnerConfig

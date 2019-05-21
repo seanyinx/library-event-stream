@@ -21,9 +21,6 @@ public class MysqlBinlogStreamStatefulTaskBuilder {
   private Consumer<Event> mysqlEventHandler;
   private DataSource dataSource;
 
-  public MysqlBinlogStreamStatefulTaskBuilder() {
-  }
-
   public MysqlBinlogStreamStatefulTaskBuilder dataSource(DataSource dataSource) {
     this.dataSource = dataSource;
     return this;

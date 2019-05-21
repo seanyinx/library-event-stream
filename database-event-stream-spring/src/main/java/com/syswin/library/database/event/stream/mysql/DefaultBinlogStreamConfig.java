@@ -13,8 +13,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import javax.sql.DataSource;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@ConditionalOnProperty(value = "library.database.stream.multi.enabled", havingValue = "false", matchIfMissing = true)
 @Configuration
 class DefaultBinlogStreamConfig {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -31,20 +30,6 @@ class DefaultBinlogStreamConfig {
 
   @Value("${library.database.stream.cluster.name}")
   private String clusterName;
-
-  @ConditionalOnMissingBean
-  @Bean(destroyMethod = "close")
-  CuratorFramework curator(@Value("${library.database.stream.zk.address}") String zookeeperAddress) throws InterruptedException {
-    CuratorFramework curator = CuratorFrameworkFactory.newClient(
-        zookeeperAddress,
-        new ExponentialBackoffRetry(1000, Integer.MAX_VALUE));
-
-    curator.start();
-    log.info("Connecting to zookeeper at {}", zookeeperAddress);
-    curator.blockUntilConnected();
-    log.info("Connected to zookeeper at {}", zookeeperAddress);
-    return curator;
-  }
 
   @ConditionalOnMissingBean
   @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "async", matchIfMissing = true)

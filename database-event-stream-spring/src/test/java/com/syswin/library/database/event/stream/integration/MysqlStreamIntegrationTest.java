@@ -9,11 +9,8 @@ import com.syswin.library.database.event.stream.integration.StatefulTaskConfig.S
 import com.syswin.library.database.event.stream.integration.containers.MysqlContainer;
 import com.syswin.library.database.event.stream.integration.containers.ZookeeperContainer;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.sql.DataSource;
 import org.awaitility.Duration;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.Network;
 
@@ -34,6 +32,7 @@ import org.testcontainers.containers.Network;
     "spring.datasource.username=root",
     "spring.datasource.password=password"
 })
+@ActiveProfiles("one-source")
 public class MysqlStreamIntegrationTest {
 
   private static final Network NETWORK = Network.newNetwork();
@@ -59,8 +58,6 @@ public class MysqlStreamIntegrationTest {
 
   @Autowired
   private MysqlEventHandler eventHandler;
-
-  private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
   @Autowired
   private DataSource dataSource;
@@ -93,11 +90,6 @@ public class MysqlStreamIntegrationTest {
   public void setUp() {
     handledEvents = eventHandler.events();
     databasePopulator.addScript(new ClassPathResource("data.sql"));
-  }
-
-  @After
-  public void tearDown() {
-    executor.shutdownNow();
   }
 
   @Test

@@ -1,14 +1,3 @@
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3316/consistency?useSSL=false
-    username: root
-    password: password
-    driver-class-name: com.mysql.jdbc.Driver
-    initialize: true
-    initialization-mode: always
-    continue-on-error: false
-    schema: classpath:sql/schema.sql
-
 logging:
   level:
     root: INFO
@@ -19,3 +8,41 @@ library.database.stream:
   participant.id: watcher
   zk.address: localhost:2181
   update.mode: blocking
+
+---
+
+spring:
+  profiles: multi-source
+  autoconfigure.exclude:
+  - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
+
+library.database.stream.multi:
+  enabled: true
+  contexts:
+  - datasource:
+      url: jdbc:mysql://localhost:3316/consistency1?useSSL=false
+      username: root1
+      password: password1
+    cluster.name: consistency1
+  - datasource:
+      url: jdbc:mysql://localhost:3316/consistency2?useSSL=false
+      username: root2
+      password: password2
+    cluster.name: consistency2
+
+---
+
+spring:
+  profiles: one-source
+  datasource:
+    url: jdbc:mysql://localhost:3316/consistency?useSSL=false
+    username: root
+    password: password
+    driver-class-name: com.mysql.jdbc.Driver
+    initialize: true
+    initialization-mode: always
+    continue-on-error: false
+    schema: classpath:sql/schema.sql

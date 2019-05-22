@@ -3,12 +3,11 @@ package com.syswin.library.database.event.stream.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.waitAtMost;
 
-import com.syswin.library.database.event.stream.BinlogSyncRecorder;
-import com.syswin.library.stateful.task.runner.StatefulTask;
 import com.syswin.library.database.event.stream.integration.StatefulTaskConfig.StoppableStatefulTask;
 import com.syswin.library.database.event.stream.integration.containers.MysqlContainer;
 import com.syswin.library.database.event.stream.integration.containers.ZookeeperContainer;
-import java.util.List;
+import com.syswin.library.stateful.task.runner.StatefulTask;
+import java.util.Queue;
 import javax.sql.DataSource;
 import org.awaitility.Duration;
 import org.junit.AfterClass;
@@ -54,10 +53,8 @@ public class MysqlStreamIntegrationTest {
 
   private final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-  private List<String> handledEvents;
-
   @Autowired
-  private MysqlEventHandler eventHandler;
+  private Queue<String> handledEvents;
 
   @Autowired
   private DataSource dataSource;
@@ -67,9 +64,6 @@ public class MysqlStreamIntegrationTest {
 
   @Autowired
   private StoppableStatefulTask statefulTask;
-
-  @Autowired
-  private BinlogSyncRecorder recorder;
 
   @BeforeClass
   public static void beforeClass() {
@@ -88,12 +82,11 @@ public class MysqlStreamIntegrationTest {
 
   @Before
   public void setUp() {
-    handledEvents = eventHandler.events();
     databasePopulator.addScript(new ClassPathResource("data.sql"));
   }
 
   @Test
-  public void streamEventsToMq() throws Exception {
+  public void streamEventsToMq() {
 
     waitAtMost(Duration.ONE_MINUTE).untilAsserted(() -> assertThat(handledEvents).hasSize(5));
     assertThat(handledEvents).containsExactly(
@@ -122,32 +115,5 @@ public class MysqlStreamIntegrationTest {
         "test4,john,bob",
         "test5,lucy,john"
     );
-
-    statefulTask.pause();
-    mysqlBinLogStream.stop();
-    DatabasePopulatorUtils.execute(databasePopulator, dataSource);
-    DatabasePopulatorUtils.execute(databasePopulator, dataSource);
-
-    fastForwardGTID(5);
-
-    statefulTask.resume();
-    Thread.sleep(1000);
-
-    // we skipped 5 SQL statements by fast forwarding
-    // and each data changing statement is a transaction in MySQL by default
-    assertThat(handledEvents).hasSize(17);
-  }
-
-  private void fastForwardGTID(int statementsToSkip) {
-    String position = recorder.position();
-    int delimiter = position.indexOf(":");
-    String sequenceRange = position.substring(delimiter);
-    String uuid = position.substring(0, delimiter + 1);
-
-    long lastSeqOfGTID = Long.parseLong(sequenceRange.substring(sequenceRange.lastIndexOf("-") + 1));
-    position = uuid + "1-" + (lastSeqOfGTID + statementsToSkip);
-
-    recorder.record(position);
-    recorder.flush();
   }
 }

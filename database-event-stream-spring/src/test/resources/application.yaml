@@ -46,3 +46,18 @@ spring:
     initialization-mode: always
     continue-on-error: false
     schema: classpath:sql/schema.sql
+
+---
+
+spring:
+  profiles: dev
+  autoconfigure.exclude:
+  - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.JndiDataSourceAutoConfiguration
+  - org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
+  - com.syswin.library.database.event.stream.mysql.DataSourceContainer
+  - com.syswin.library.database.event.stream.mysql.DefaultMultiDataSourceConfig
+  - com.syswin.library.database.event.stream.zookeeper.DefaultCuratorConfig
+  - com.syswin.library.database.event.stream.mysql.DefaultBinlogStreamConfig
+  - com.syswin.library.database.event.stream.DefaultStatefulTaskRunnerConfig

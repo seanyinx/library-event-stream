@@ -15,9 +15,6 @@ import org.springframework.context.annotation.Configuration;
 class DefaultCuratorConfig {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DefaultCuratorConfig() {
-  }
-
   @ConditionalOnMissingBean
   @Bean(destroyMethod = "close")
   static CuratorFramework curator(@Value("${library.database.stream.zk.address}") String zookeeperAddress) throws InterruptedException {

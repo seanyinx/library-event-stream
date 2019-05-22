@@ -6,10 +6,10 @@ import static org.awaitility.Awaitility.waitAtMost;
 import com.syswin.library.database.event.stream.integration.containers.MysqlContainer;
 import com.syswin.library.database.event.stream.integration.containers.ZookeeperContainer;
 import java.util.List;
+import java.util.Queue;
 import javax.sql.DataSource;
 import org.awaitility.Duration;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -56,10 +56,8 @@ public class MultiDataSourceIntegrationTest {
 
   private final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-  private List<String> handledEvents;
-
   @Autowired
-  private MysqlEventHandler eventHandler;
+  private Queue<String> handledEvents;
 
   @Autowired
   private List<DataSource> dataSources;
@@ -94,14 +92,6 @@ public class MultiDataSourceIntegrationTest {
     System.clearProperty("library.database.stream.multi.contexts[1].datasource.password");
     System.clearProperty("library.database.stream.multi.contexts[1].cluster.name");
     System.clearProperty("library.database.stream.zk.address");
-  }
-
-  @Before
-  public void setUp() {
-    handledEvents = eventHandler.events();
-    databasePopulator.addScript(new ClassPathResource("sql/schema.sql"));
-    databasePopulator.addScript(new ClassPathResource("data.sql"));
-    databasePopulator.addScript(new ClassPathResource("data1.sql"));
   }
 
   @Test

@@ -7,10 +7,9 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.TableMapEventData;
 import com.github.shyiko.mysql.binlog.event.WriteRowsEventData;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
@@ -21,12 +20,13 @@ public class MysqlEventHandler implements Consumer<Event> {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final Set<String> tableNames;
-  private final ArrayList<String> events = new ArrayList<>();
+  private final Collection<String> events;
   private TableMapEventData eventData;
 
-  MysqlEventHandler(String... tableNames) {
+  MysqlEventHandler(Collection<String> events, String... tableNames) {
     this.tableNames = new HashSet<>();
     Collections.addAll(this.tableNames, tableNames);
+    this.events = events;
   }
 
   @Override
@@ -43,7 +43,7 @@ public class MysqlEventHandler implements Consumer<Event> {
     }
   }
 
-  List<String> events() {
+  Collection<String> events() {
     return events;
   }
 

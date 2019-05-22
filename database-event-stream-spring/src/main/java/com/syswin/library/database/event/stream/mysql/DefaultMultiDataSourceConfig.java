@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import org.apache.curator.framework.CuratorFramework;
@@ -44,11 +45,17 @@ class DefaultMultiDataSourceConfig {
   private final List<DataSource> dataSources;
   private final List<ZkBasedStatefulTaskRunner> taskRunners;
 
-  DefaultMultiDataSourceConfig(MultiDataSourceConfig multiDataSourceConfig, List<DataSource> dataSources) {
+  private final StatefulTaskComposer statefulTaskComposer;
+
+  DefaultMultiDataSourceConfig(MultiDataSourceConfig multiDataSourceConfig,
+      StatefulTaskComposer statefulTaskComposer,
+      List<DataSource> dataSources) {
+
     this.multiDataSourceConfig = multiDataSourceConfig;
     this.taskRunners = new ArrayList<>(multiDataSourceConfig.getContexts().size());
     this.binlogSyncRecorders = new ArrayList<>(multiDataSourceConfig.getContexts().size());
     this.dataSources = dataSources;
+    this.statefulTaskComposer = statefulTaskComposer;
   }
 
   private BinlogSyncRecorder binlogSyncRecorder(CuratorFramework curator,
@@ -111,18 +118,21 @@ class DefaultMultiDataSourceConfig {
       @Value("${library.database.stream.update.mode}") String updateMode,
       @Value("${library.database.stream.update.interval:200}") long updateIntervalMillis,
       EventType[] eventTypes,
-      Consumer<Event> eventHandler,
+      Function<DataSource, Consumer<Event>> eventHandlerSupplier,
       CuratorFramework curator) throws Exception {
 
     for (DbStreamContext context : multiDataSourceConfig.getContexts()) {
-      StatefulTask statefulTask = binLogStreamTask(dataSource(context.getDataSource()),
+      DataSource dataSource = dataSource(context.getDataSource());
+      StatefulTask statefulTask = binLogStreamTask(dataSource,
           context.getDataSource().getUsername(),
           context.getDataSource().getPassword(),
           serverId,
           eventTypes,
-          eventHandler,
+          eventHandlerSupplier.apply(dataSource),
           binlogSyncRecorder(curator, clusterRoot, context.getCluster().getName(), updateMode, updateIntervalMillis)
       );
+
+      statefulTask = statefulTaskComposer.apply(dataSource, statefulTask);
 
       ZkBasedStatefulTaskRunner taskRunner = new ZkBasedStatefulTaskRunner(
           clusterRoot,

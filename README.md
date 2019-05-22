@@ -55,7 +55,7 @@ library.database.stream.multi:
             <version>xxx</version>
           </dependency>
     ```
-1. 自定义如下两个Bean
+1. 单库同步：自定义如下三个Bean
     ```java
       // 需解析的数据库事件，未添加的则抛弃
       @Bean
@@ -67,5 +67,30 @@ library.database.stream.multi:
       @Bean
       Consumer<Event> eventConsumer() {
         return new MysqlEventHandler("listener_event");
+      }
+    
+      // 自定义的其他需要选主的任务，如清理同步完事件的表
+      @Bean
+      StatefulTaskSupplier statefulTaskSupplier() {
+        return dataSource -> new MyStatefulTask();
+      }
+    ```
+1. 多库同步：自定义如下三个Bean
+    ```java
+      @Bean
+      EventType[] eventTypes() {
+        return new EventType[]{TABLE_MAP, EXT_WRITE_ROWS};
+      }
+    
+      // 事件处理器，按库区分
+      @Bean
+      Function<DataSource, Consumer<Event>> eventConsumerSupplier() {
+        return dataSource -> new MysqlEventHandler(events, "listener_event");
+      }
+    
+      // 自定义的其他需要选主的任务，如清理同步完事件的表，按库区分
+      @Bean
+      StatefulTaskSupplier statefulTaskSupplier() {
+        return dataSource -> new MyStatefulTask();
       }
     ```

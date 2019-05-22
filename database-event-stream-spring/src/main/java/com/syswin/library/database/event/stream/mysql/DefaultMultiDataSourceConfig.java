@@ -115,7 +115,7 @@ class DefaultMultiDataSourceConfig {
       @Value("${library.database.stream.cluster.root:" + ZK_ROOT_PATH + "}") String clusterRoot,
       @Value("${library.database.stream.participant.id}") String participantId,
       @Value("${library.database.stream.mysql.serverId:0}") long serverId,
-      @Value("${library.database.stream.update.mode}") String updateMode,
+      @Value("${library.database.stream.update.mode:async}") String updateMode,
       @Value("${library.database.stream.update.interval:200}") long updateIntervalMillis,
       EventType[] eventTypes,
       Function<DataSource, Consumer<Event>> eventHandlerSupplier,

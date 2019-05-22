@@ -1,6 +1,6 @@
 package com.syswin.library.database.event.stream.zookeeper;
 
-import static com.syswin.library.database.event.stream.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
+import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
 
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
 import com.syswin.library.database.event.stream.DbEventStreamConnectionException;
@@ -11,15 +11,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
+
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String BINLOG_POSITION_PATH_TEMPLATE = ZK_ROOT_PATH + "/%s/position";
   private final String recordPath;
   private final CuratorFramework curator;
 
   ZkBinlogSyncRecorder(String clusterName, CuratorFramework curator) {
+    this(ZK_ROOT_PATH, clusterName, curator);
+  }
+
+  ZkBinlogSyncRecorder(String rootPath, String clusterName, CuratorFramework curator) {
     this.curator = curator;
-    this.recordPath = String.format(BINLOG_POSITION_PATH_TEMPLATE, clusterName);
+    this.recordPath = String.format("/%s/%s/position", rootPath, clusterName);
   }
 
   void updatePositionToZk(String position) {

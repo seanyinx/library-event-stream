@@ -1,5 +1,7 @@
 package com.syswin.library.database.event.stream;
 
+import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
+
 import com.syswin.library.stateful.task.runner.StatefulTask;
 import com.syswin.library.stateful.task.runner.zookeeper.ZkBasedStatefulTaskRunner;
 import org.apache.curator.framework.CuratorFramework;
@@ -14,10 +16,11 @@ class DefaultStatefulTaskRunnerConfig {
   @ConditionalOnMissingBean(ZkBasedStatefulTaskRunner.class)
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   ZkBasedStatefulTaskRunner taskRunner(
+      @Value("${library.database.stream.cluster.root:" + ZK_ROOT_PATH + "}") String clusterRoot,
       @Value("${library.database.stream.cluster.name}") String clusterName,
       @Value("${library.database.stream.participant.id}") String participantId,
       StatefulTask task,
       CuratorFramework curator) {
-    return new ZkBasedStatefulTaskRunner(clusterName, participantId, task, curator);
+    return new ZkBasedStatefulTaskRunner(clusterRoot, clusterName, participantId, task, curator);
   }
 }

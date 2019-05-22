@@ -1,5 +1,7 @@
 package com.syswin.library.database.event.stream.mysql;
 
+import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
+
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
@@ -50,6 +52,7 @@ class DefaultMultiDataSourceConfig {
   }
 
   private BinlogSyncRecorder binlogSyncRecorder(CuratorFramework curator,
+      String clusterRoot,
       String clusterName,
       String updateMode,
       long updateIntervalMillis) {
@@ -57,10 +60,10 @@ class DefaultMultiDataSourceConfig {
 
     if ("blocking".equalsIgnoreCase(updateMode)) {
       log.info("Starting with blocking binlog recorder for cluster {}", clusterName);
-      recorder = new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterName, curator));
+      recorder = new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterRoot, clusterName, curator));
     } else {
       log.info("Starting with async binlog recorder for cluster {}", clusterName);
-      recorder = new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterName, curator, updateIntervalMillis));
+      recorder = new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterRoot, clusterName, curator, updateIntervalMillis));
     }
 
     binlogSyncRecorders.add(recorder);
@@ -102,6 +105,7 @@ class DefaultMultiDataSourceConfig {
 
   @Bean
   List<ZkBasedStatefulTaskRunner> taskRunner(
+      @Value("${library.database.stream.cluster.root:" + ZK_ROOT_PATH + "}") String clusterRoot,
       @Value("${library.database.stream.participant.id}") String participantId,
       @Value("${library.database.stream.mysql.serverId:0}") long serverId,
       @Value("${library.database.stream.update.mode}") String updateMode,
@@ -117,10 +121,16 @@ class DefaultMultiDataSourceConfig {
           serverId,
           eventTypes,
           eventHandler,
-          binlogSyncRecorder(curator, context.getCluster().getName(), updateMode, updateIntervalMillis)
+          binlogSyncRecorder(curator, clusterRoot, context.getCluster().getName(), updateMode, updateIntervalMillis)
       );
 
-      ZkBasedStatefulTaskRunner taskRunner = new ZkBasedStatefulTaskRunner(context.getCluster().getName(), participantId, statefulTask, curator);
+      ZkBasedStatefulTaskRunner taskRunner = new ZkBasedStatefulTaskRunner(
+          clusterRoot,
+          context.getCluster().getName(),
+          participantId,
+          statefulTask,
+          curator);
+
       taskRunners.add(taskRunner);
       taskRunner.start();
     }

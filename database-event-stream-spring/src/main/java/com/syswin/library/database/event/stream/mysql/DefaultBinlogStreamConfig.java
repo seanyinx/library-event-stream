@@ -1,5 +1,7 @@
 package com.syswin.library.database.event.stream.mysql;
 
+import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
+
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
@@ -28,6 +30,9 @@ class DefaultBinlogStreamConfig {
 
   private final Random random = new Random(System.currentTimeMillis());
 
+  @Value("${library.database.stream.cluster.root:" + ZK_ROOT_PATH + "}")
+  private String clusterRoot;
+
   @Value("${library.database.stream.cluster.name}")
   private String clusterName;
 
@@ -37,7 +42,7 @@ class DefaultBinlogStreamConfig {
   BinlogSyncRecorder asyncBinlogSyncRecorder(CuratorFramework curator,
       @Value("${library.database.stream.update.interval:200}") long updateIntervalMillis) {
     log.info("Starting with async binlog recorder");
-    return new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterName, curator, updateIntervalMillis));
+    return new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterRoot, clusterName, curator, updateIntervalMillis));
   }
 
   @ConditionalOnMissingBean
@@ -45,7 +50,7 @@ class DefaultBinlogStreamConfig {
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   BinlogSyncRecorder blockingBinlogSyncRecorder(CuratorFramework curator) {
     log.info("Starting with blocking binlog recorder");
-    return new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterName, curator));
+    return new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterRoot, clusterName, curator));
   }
 
   @ConditionalOnMissingBean

@@ -8,6 +8,10 @@ public class BlockingZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
     super(clusterName, curator);
   }
 
+  public BlockingZkBinlogSyncRecorder(String rootPath, String clusterName, CuratorFramework curator) {
+    super(rootPath, clusterName, curator);
+  }
+
   @Override
   void flushIfUpdated() {
   }

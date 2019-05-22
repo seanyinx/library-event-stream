@@ -23,6 +23,11 @@ public class AsyncZkBinlogSyncRecorder extends ZkBinlogSyncRecorder {
     this.updateIntervalMillis = updateIntervalMillis;
   }
 
+  public AsyncZkBinlogSyncRecorder(String rootPath, String clusterName, CuratorFramework curator, long updateIntervalMillis) {
+    super(rootPath, clusterName, curator);
+    this.updateIntervalMillis = updateIntervalMillis;
+  }
+
   @Override
   public void record(String position) {
     this.position = position;

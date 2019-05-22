@@ -1,6 +1,9 @@
 package com.syswin.library.stateful.task.runner.zookeeper;
 
-class ZookeeperPaths {
+public class ZookeeperPaths {
 
-  static final String ZK_ROOT_PATH = "/syswin";
+  private ZookeeperPaths() {
+  }
+
+  public static final String ZK_ROOT_PATH = "syswin";
 }

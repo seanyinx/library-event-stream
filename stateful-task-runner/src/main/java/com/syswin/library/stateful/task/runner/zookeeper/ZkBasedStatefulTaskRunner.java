@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ZkBasedStatefulTaskRunner {
+
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String LEADER_LATCH_PATH_TEMPLATE = ZK_ROOT_PATH + "/%s/leader";
   private final String leaderLatchPath;
   private final CuratorFramework curator;
   private final Consumer<Throwable> errorHandler = errorHandler();
@@ -24,11 +24,15 @@ public class ZkBasedStatefulTaskRunner {
   private final StatefulTask task;
 
   public ZkBasedStatefulTaskRunner(String clusterName, String participantId, StatefulTask task, CuratorFramework curator) {
+    this(ZK_ROOT_PATH, clusterName, participantId, task, curator);
+  }
+
+  public ZkBasedStatefulTaskRunner(String rootPath, String clusterName, String participantId, StatefulTask task, CuratorFramework curator) {
     this.participantId = participantId;
     this.task = task;
 
     this.curator = curator;
-    leaderLatchPath = String.format(LEADER_LATCH_PATH_TEMPLATE, clusterName);
+    leaderLatchPath = String.format("/%s/%s/leader", rootPath, clusterName);
 
     leaderSelector = createLeaderSelector(curator, task);
   }

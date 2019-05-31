@@ -9,9 +9,11 @@ import javax.sql.DataSource;
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@ConditionalOnProperty(value = "library.database.stream.multi.enabled", havingValue = "false", matchIfMissing = true)
 @Configuration
 class DefaultStatefulTaskRunnerConfig {
 

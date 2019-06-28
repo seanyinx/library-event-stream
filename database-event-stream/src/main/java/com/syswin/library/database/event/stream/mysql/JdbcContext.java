@@ -46,6 +46,18 @@ class JdbcContext {
     this.dataSource = dataSource;
   }
 
+  GtidSet availableGtidSet() {
+    AtomicReference<String> gtidSet = new AtomicReference<>();
+
+    query("SHOW MASTER STATUS", rs -> {
+      if (rs.next() && rs.getMetaData().getColumnCount() > 4) {
+        gtidSet.set(rs.getString(5));
+      }
+    });
+
+    return toGtidSet(gtidSet);
+  }
+
   GtidSet purgedGtidSet() {
     AtomicReference<String> gtidSet = new AtomicReference<>();
 

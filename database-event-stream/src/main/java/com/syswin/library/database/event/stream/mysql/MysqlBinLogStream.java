@@ -99,6 +99,7 @@ class MysqlBinLogStream {
   }
 
   private String position() {
+    log.info("Available GTID set on master is {}", jdbcContext.availableGtidSet());
     return mergeGtidSets(
         new GtidSet(binlogSyncRecorder.position()),
         jdbcContext.purgedGtidSet()).toString();

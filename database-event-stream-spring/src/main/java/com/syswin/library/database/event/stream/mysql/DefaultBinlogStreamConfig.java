@@ -30,6 +30,7 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.EventType;
 import com.syswin.library.database.event.stream.BinlogSyncRecorder;
 import com.syswin.library.database.event.stream.CounterBinlogSyncRecorder;
+import com.syswin.library.database.event.stream.DatabaseBinlogSyncRecorder;
 import com.syswin.library.database.event.stream.zookeeper.AsyncZkBinlogSyncRecorder;
 import com.syswin.library.database.event.stream.zookeeper.BlockingZkBinlogSyncRecorder;
 import java.lang.invoke.MethodHandles;
@@ -73,6 +74,15 @@ class DefaultBinlogStreamConfig {
   BinlogSyncRecorder blockingBinlogSyncRecorder(CuratorFramework curator) {
     log.info("Starting with blocking binlog recorder");
     return new CounterBinlogSyncRecorder(new BlockingZkBinlogSyncRecorder(clusterRoot, clusterName, curator));
+  }
+
+  @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "database")
+  @Bean(initMethod = "start", destroyMethod = "shutdown")
+  BinlogSyncRecorder databaseBinlogSyncRecorder(
+      @Value("${library.database.stream.update.interval:200}") long updateIntervalMillis,
+      DataSource dataSource) {
+    log.info("Starting with database based binlog recorder");
+    return new CounterBinlogSyncRecorder(new DatabaseBinlogSyncRecorder(clusterName, dataSource, updateIntervalMillis));
   }
 
   @ConditionalOnMissingBean

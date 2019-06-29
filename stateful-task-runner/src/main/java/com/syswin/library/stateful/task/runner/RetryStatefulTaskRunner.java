@@ -22,36 +22,54 @@
  * SOFTWARE.
  */
 
-package com.syswin.library.database.event.stream.zookeeper;
+package com.syswin.library.stateful.task.runner;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.lang.invoke.MethodHandles;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ConditionalOnProperty(value = "library.database.stream.election.enabled", havingValue = "true", matchIfMissing = true)
-class DefaultCuratorConfig {
+public class RetryStatefulTaskRunner {
+
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @ConditionalOnMissingBean
-  @Bean(destroyMethod = "close")
-  static CuratorFramework curator(@Value("${library.database.stream.zk.address}") String zookeeperAddress) throws InterruptedException {
-    CuratorFramework curator = CuratorFrameworkFactory.newClient(
-        zookeeperAddress,
-        new ExponentialBackoffRetry(1000, Integer.MAX_VALUE));
+  private final StatefulTask underlying;
+  private final long retryIntervalMillis;
 
-    curator.start();
-    log.info("Connecting to zookeeper at {}", zookeeperAddress);
-    curator.blockUntilConnected();
-    log.info("Connected to zookeeper at {}", zookeeperAddress);
-    return curator;
+  private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+  public RetryStatefulTaskRunner(StatefulTask underlying, long retryIntervalMillis) {
+    this.underlying = underlying;
+    this.retryIntervalMillis = retryIntervalMillis;
+  }
+
+  public void start() {
+    executor.execute(() -> {
+      do {
+        underlying.start(ex -> {
+          underlying.stop();
+          logFailure("and will retry", ex);
+        });
+
+        try {
+          MILLISECONDS.sleep(retryIntervalMillis);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          logFailure("due to interruption", e);
+        }
+      } while (!Thread.currentThread().isInterrupted());
+    });
+  }
+
+  public void shutdown() {
+    underlying.stop();
+    executor.shutdownNow();
+  }
+
+  private void logFailure(String cause, Throwable ex) {
+    log.warn("Failed to run stateful task {}", cause, ex);
   }
 }

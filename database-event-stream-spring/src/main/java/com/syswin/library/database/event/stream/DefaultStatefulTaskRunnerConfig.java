@@ -27,12 +27,12 @@ package com.syswin.library.database.event.stream;
 import static com.syswin.library.stateful.task.runner.zookeeper.ZookeeperPaths.ZK_ROOT_PATH;
 
 import com.syswin.library.database.event.stream.mysql.StatefulTaskComposer;
+import com.syswin.library.stateful.task.runner.RetryStatefulTaskRunner;
 import com.syswin.library.stateful.task.runner.StatefulTask;
 import com.syswin.library.stateful.task.runner.zookeeper.ZkBasedStatefulTaskRunner;
 import javax.sql.DataSource;
 import org.apache.curator.framework.CuratorFramework;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +41,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class DefaultStatefulTaskRunnerConfig {
 
-  @ConditionalOnMissingBean(ZkBasedStatefulTaskRunner.class)
   @Bean(initMethod = "start", destroyMethod = "shutdown")
+  @ConditionalOnProperty(value = "library.database.stream.election.enabled", havingValue = "true", matchIfMissing = true)
   ZkBasedStatefulTaskRunner taskRunner(
       @Value("${library.database.stream.cluster.root:" + ZK_ROOT_PATH + "}") String clusterRoot,
       @Value("${library.database.stream.cluster.name}") String clusterName,
@@ -56,5 +56,18 @@ class DefaultStatefulTaskRunnerConfig {
         participantId,
         statefulTaskComposer.apply(dataSource, task),
         curator);
+  }
+
+  @Bean(initMethod = "start", destroyMethod = "shutdown")
+  @ConditionalOnProperty(value = "library.database.stream.election.enabled", havingValue = "false")
+  RetryStatefulTaskRunner retryTaskRunner(
+      @Value("${library.database.stream.update.interval:200}") long updateIntervalMillis,
+      DataSource dataSource,
+      StatefulTask task,
+      StatefulTaskComposer statefulTaskComposer) {
+
+    return new RetryStatefulTaskRunner(
+        statefulTaskComposer.apply(dataSource, task),
+        updateIntervalMillis);
   }
 }

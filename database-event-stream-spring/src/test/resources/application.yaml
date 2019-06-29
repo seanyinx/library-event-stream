@@ -45,7 +45,7 @@ spring:
     initialize: true
     initialization-mode: always
     continue-on-error: false
-    schema: classpath:sql/schema.sql
+    schema: classpath:sql/schema.sql,classpath:schema-binlog.sql
 
 ---
 

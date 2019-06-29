@@ -42,6 +42,7 @@ public class DatabaseBinlogSyncRecorder implements BinlogSyncRecorder {
 
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private static final String BINLOG_UPDATE_LOG = "{} binlog position [{}] of cluster [{}] to database";
   private static final String SELECT_BINLOG_SQL = "select binlog_position from library_event_stream where cluster_name = ?";
   private static final String UPDATE_BINLOG_SQL = "insert into library_event_stream(cluster_name, binlog_position) values (?, ?) "
       + "on duplicate key update binlog_position = ?";
@@ -68,7 +69,7 @@ public class DatabaseBinlogSyncRecorder implements BinlogSyncRecorder {
   public void record(String position) {
     this.position = position;
     updated.set(true);
-    log.info("Saved binlog position [{}] locally", position);
+    log.trace("Saved binlog position [{}] locally", position);
   }
 
   @Override
@@ -92,6 +93,7 @@ public class DatabaseBinlogSyncRecorder implements BinlogSyncRecorder {
   @Override
   public void flush() {
     flushIfUpdated();
+    log.info(BINLOG_UPDATE_LOG, "Flushed", position, clusterName);
   }
 
   @Override
@@ -107,11 +109,11 @@ public class DatabaseBinlogSyncRecorder implements BinlogSyncRecorder {
           statement.setString(2, position);
           statement.setString(3, position);
           statement.execute();
-          log.info("Executed statement {}", statement);
+          log.debug(BINLOG_UPDATE_LOG, "Updated", position, clusterName);
         }
       } catch (SQLException e) {
         updated.compareAndSet(false, true);
-        throw new DbEventStreamConnectionException(cause("updating"), e);
+        log.error(cause("updating"), e);
       }
     }
   }

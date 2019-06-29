@@ -74,13 +74,4 @@ public class CounterBinlogSyncRecorderTest {
 
     assertThat(position).isEqualTo(this.position);
   }
-
-  @Test
-  public void getPathWithUnderlying() {
-    when(recorder.recordPath()).thenReturn(position);
-
-    String position = counter.recordPath();
-
-    assertThat(position).isEqualTo(this.position);
-  }
 }

@@ -75,14 +75,14 @@ public abstract class ZkBinlogSyncRecorder implements BinlogSyncRecorder {
 
       return binlogPositionString();
     } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
       throw new DbEventStreamEndOfLifeException(e);
     } catch (Exception e) {
       throw new DbEventStreamConnectionException("Failed to retrieve binlog position on zookeeper with path " + recordPath, e);
     }
   }
 
-  @Override
-  public String recordPath() {
+  String recordPath() {
     return recordPath;
   }
 

@@ -56,11 +56,6 @@ public class CounterBinlogSyncRecorder implements BinlogSyncRecorder {
   }
 
   @Override
-  public String recordPath() {
-    return recorder.recordPath();
-  }
-
-  @Override
   public void flush() {
     recorder.flush();
   }

@@ -61,3 +61,24 @@ spring:
   - com.syswin.library.database.event.stream.zookeeper.DefaultCuratorConfig
   - com.syswin.library.database.event.stream.mysql.DefaultBinlogStreamConfig
   - com.syswin.library.database.event.stream.DefaultStatefulTaskRunnerConfig
+
+---
+
+spring:
+  profiles: binlog-db
+  datasource:
+    url: jdbc:h2:mem:library;MODE=MYSQL
+    username: root
+    password: password
+    driver-class-name: org.h2.Driver
+    initialize: true
+    initialization-mode: always
+    continue-on-error: false
+    schema: classpath:schema-binlog.sql
+    data:
+  autoconfigure.exclude:
+  - com.syswin.library.database.event.stream.mysql.DataSourceContainer
+  - com.syswin.library.database.event.stream.mysql.DefaultMultiDataSourceConfig
+  - com.syswin.library.database.event.stream.zookeeper.DefaultCuratorConfig
+  - com.syswin.library.database.event.stream.mysql.DefaultBinlogStreamConfig
+  - com.syswin.library.database.event.stream.DefaultStatefulTaskRunnerConfig

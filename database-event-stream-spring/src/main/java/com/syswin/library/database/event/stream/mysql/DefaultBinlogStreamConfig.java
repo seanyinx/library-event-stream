@@ -60,7 +60,6 @@ class DefaultBinlogStreamConfig {
   @Value("${library.database.stream.cluster.name}")
   private String clusterName;
 
-  @ConditionalOnMissingBean
   @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "async", matchIfMissing = true)
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   BinlogSyncRecorder asyncBinlogSyncRecorder(CuratorFramework curator,
@@ -69,7 +68,6 @@ class DefaultBinlogStreamConfig {
     return new CounterBinlogSyncRecorder(new AsyncZkBinlogSyncRecorder(clusterRoot, clusterName, curator, updateIntervalMillis));
   }
 
-  @ConditionalOnMissingBean
   @ConditionalOnProperty(value = "library.database.stream.update.mode", havingValue = "blocking")
   @Bean(initMethod = "start", destroyMethod = "shutdown")
   BinlogSyncRecorder blockingBinlogSyncRecorder(CuratorFramework curator) {

@@ -30,8 +30,6 @@ public interface BinlogSyncRecorder {
 
   String position();
 
-  String recordPath();
-
   void flush();
 
   default void start() {

@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.sql.DataSource;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
@@ -93,7 +94,7 @@ class DefaultBinlogStreamConfig {
       @Value("${spring.datasource.password}") String password,
       @Value("${library.database.stream.mysql.serverId:0}") long serverId,
       EventType[] eventTypes,
-      Consumer<Event> eventHandler,
+      Function<DataSource, Consumer<Event>> eventHandler,
       BinlogSyncRecorder binlogSyncRecorder) throws SQLException {
 
     String[] databaseUrl;
@@ -114,7 +115,7 @@ class DefaultBinlogStreamConfig {
         .password(password)
         .serverId(serverId)
         .binlogSyncRecorder(binlogSyncRecorder)
-        .databaseEventHandler(eventHandler)
+        .databaseEventHandler(eventHandler.apply(dataSource))
         .addEventTypes(eventTypes)
         .build();
   }

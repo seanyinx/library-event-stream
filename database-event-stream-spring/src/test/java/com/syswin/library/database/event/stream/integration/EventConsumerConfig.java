@@ -55,13 +55,6 @@ class EventConsumerConfig {
     return new EventType[]{TABLE_MAP, EXT_WRITE_ROWS};
   }
 
-  @Profile("one-source")
-  @Bean
-  Consumer<Event> eventConsumer() {
-    return new MysqlEventHandler(events, "listener_event");
-  }
-
-  @Profile("multi-source")
   @Bean
   Function<DataSource, Consumer<Event>> eventConsumerSupplier() {
     return dataSource -> new MysqlEventHandler(events, "listener_event");

@@ -38,8 +38,8 @@
   </modules>
 
   <scm>
-    <connection>scm:git:${project.git.url}/library.git</connection>
-    <developerConnection>scm:git:${project.git.url}/library.git</developerConnection>
+    <connection>scm:git:git@github.com:syswin-bj/library-event-stream.git</connection>
+    <developerConnection>scm:git:git@github.com:syswin-bj/library-event-stream.git</developerConnection>
     <url>${project.git.url}/library</url>
     <tag>${project.version}</tag>
   </scm>
@@ -47,9 +47,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <project.git.url>http://172.28.4.12/ZJC_Java</project.git.url>
+    <project.git.url>https://github.com/syswin-bj/library-event-stream</project.git.url>
     <java.version>1.8</java.version>
-    <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
+    <spring.boot.version>2.0.9.RELEASE</spring.boot.version>
     <curator.version>4.1.0</curator.version>
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>2.10.0</log4j.version>
@@ -57,9 +57,9 @@
     <disruptor.version>3.3.6</disruptor.version>
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <pact.version>3.5.20</pact.version>
-    <sonar.host.url>http://172.28.39.51:9000</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>${user.dir}/coverage-aggregate/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -198,18 +198,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <distributionManagement>
-    <repository>
-      <id>nexus-releases</id>
-      <name>Nexus Releases Repository</name>
-      <url>http://maven.systoon.com/repository/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>nexus-snapshots</id>
-      <name>Nexus Snapshots Repository</name>
-      <url>http://maven.systoon.com/repository/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
   <build>
     <testResources>
       <testResource>

@@ -10,7 +10,7 @@
 * 已消费事件的GTID更新到Zookeeper，保证主从切换时可从上次的GTID继续消费
 
 ## 设计图
-![数据库日志同步设计图](images/database-streaming.png)
+![数据库日志同步设计图](images/database-streaming.jpg)
 * 集成database-event-stream的应用通过Zookeeper选主，只有主节点与数据库建立长连接
 * database-event-stream伪装为MySQL从节点，获取binlog事件
 * database-event-stream定时更新当前消费的最新MySQL GTID到Zookeeper

@@ -9,6 +9,13 @@
 * 使用主从模式，使用Zookeeper选主保证多点部署时不重复消费MySQL日志
 * 已消费事件的GTID更新到Zookeeper，保证主从切换时可从上次的GTID继续消费
 
+## 设计图
+![数据库日志同步设计图](images/database-streaming.png)
+* 集成database-event-stream的应用通过Zookeeper选主，只有主节点与数据库建立长连接
+* database-event-stream伪装为MySQL从节点，获取binlog事件
+* database-event-stream定时更新当前消费的最新MySQL GTID到Zookeeper
+* 应用重启或重新选主时，自动从Zookeeper获取MySQL GTID，避免binlog事件重复消费
+
 ### 单库同步
 使用 `database-event-stream-spring` 依赖时，默认同步单库日志，从 `spring.datasource` 配置中获取数据库配置。
 
